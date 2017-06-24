@@ -99,7 +99,7 @@ function processEvent(event, callback) {
         var re = new RegExp(slackChannelReg, 'g');
         var match = re.exec(topic);
         console.info(match[1]);
-        slackChannel = match+'#'
+        slackChannel = '#'+match[1]
     }
     console.info('push to slack channel: '+slackChannel);
 
