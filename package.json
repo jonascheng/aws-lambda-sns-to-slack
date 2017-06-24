@@ -1,0 +1,23 @@
+{
+  "name": "aws-lambda-sns-to-slack",
+  "version": "1.0.0",
+  "description": "lambda project for automated testing",
+  "main": "lambda-sns-to-slack.js",
+  "dependencies": {
+    "lambda-local": "^1.4.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jonascheng/aws-lambda-sns-to-slack.git"
+  },
+  "author": "Jonas",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jonascheng/aws-lambda-sns-to-slack/issues"
+  },
+  "homepage": "https://github.com/jonascheng/aws-lambda-sns-to-slack#readme"
+}
