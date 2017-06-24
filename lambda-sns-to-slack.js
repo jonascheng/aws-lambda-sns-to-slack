@@ -50,7 +50,8 @@ const https = require('https');
 // The base-64 encoded, encrypted key (CiphertextBlob) stored in the kmsEncryptedHookUrl environment variable
 const kmsEncryptedHookUrl = process.env.kmsEncryptedHookUrl;
 // The Slack channel to send a message to stored in the slackChannel environment variable
-const slackChannel = process.env.slackChannel;
+const slackChannelReg = process.env.slackChannelReg;
+let slackChannel = process.env.slackChannel;
 let hookUrl
 
 function postMessage(message, callback) {
@@ -82,10 +83,25 @@ function postMessage(message, callback) {
 
 function processEvent(event, callback) {
     const message = JSON.parse(event.Records[0].Sns.Message);
+    const topicArn = event.Records[0].Sns.TopicArn;
     const alarmName = message.AlarmName;
     const newState = message.NewStateValue;
     const reason = message.NewStateReason;
     const oldState = message.OldStateValue;
+
+    console.info('topicArn: '+topicArn)
+    // arn:aws:sns:ap-northeast-1:710026814108:[SNS Topic]
+    var topic = topicArn.split(':')[5];
+    console.info('topic: '+topic);
+
+    // support multiple channel
+    if (slackChannelReg) {
+        var re = new RegExp(slackChannelReg, 'g');
+        var match = re.exec(topic);
+        console.info(match[1]);
+        slackChannel = match+'#'
+    }
+    console.info('push to slack channel: '+slackChannel);
 
     // skip
     if (oldState === 'INSUFFICIENT_DATA' && newState === 'OK') {
@@ -124,9 +140,21 @@ function processEvent(event, callback) {
     });
 }
 
+function logSnsEvent(event) {
+    console.info('logSnsEvent: ')
+    console.info(event.Records[0].Sns);
+}
+
+exports.setHookUrl = (_hookUrl_) => {
+    console.info('set hook url to: '+_hookUrl_);
+    hookUrl = _hookUrl_;
+};
+
 exports.handler = (event, context, callback) => {
+    logSnsEvent(event);
     if (hookUrl) {
         // Container reuse, simply process the event with the key in memory
+        console.info('Container reuse, simply process the event with the key in memory')
         processEvent(event, callback);
     } else if (kmsEncryptedHookUrl && kmsEncryptedHookUrl !== '<kmsEncryptedHookUrl>') {
         const encryptedBuf = new Buffer(kmsEncryptedHookUrl, 'base64');
