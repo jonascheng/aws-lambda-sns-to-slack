@@ -96,6 +96,7 @@ function processEvent(event, callback) {
 
     // support multiple channel
     if (slackChannelReg) {
+        console.info('slackChannelReg: '+slackChannelReg);
         var re = new RegExp(slackChannelReg, 'g');
         var match = re.exec(topic);
         console.info(match[1]);
